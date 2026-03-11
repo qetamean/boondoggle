@@ -1,0 +1,29 @@
+# Unreal Engine
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+# Generated project files
+.vs/
+.vscode/*
+!.vscode/extensions.json
+*.VC.db
+*.opensdf
+*.sdf
+*.suo
+*.xcworkspace
+*.xcodeproj
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Compiled source
+*.pdb
+*.ilk
