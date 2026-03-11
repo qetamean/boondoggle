@@ -2,6 +2,7 @@
 
 
 #include "CombatCharacter.h"
+#include "GrappleComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -46,6 +47,9 @@ ACombatCharacter::ACombatCharacter()
 	// create the life bar widget component
 	LifeBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("LifeBar"));
 	LifeBar->SetupAttachment(RootComponent);
+
+	// create the grapple device component
+	GrappleDevice = CreateDefaultSubobject<UGrappleComponent>(TEXT("GrappleDevice"));
 
 	// set the player tag
 	Tags.Add(FName("Player"));
@@ -531,6 +535,10 @@ void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		// Camera Side Toggle
 		EnhancedInputComponent->BindAction(ToggleCameraAction, ETriggerEvent::Triggered, this, &ACombatCharacter::ToggleCamera);
+
+		// Grapple — press to fire, release to drop the environmental grapple
+		EnhancedInputComponent->BindAction(GrappleAction, ETriggerEvent::Started, GrappleDevice, &UGrappleComponent::FireGrapple);
+		EnhancedInputComponent->BindAction(GrappleAction, ETriggerEvent::Completed, GrappleDevice, &UGrappleComponent::ReleaseGrapple);
 	}
 }
 

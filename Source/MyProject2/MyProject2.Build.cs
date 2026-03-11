@@ -18,7 +18,8 @@ public class MyProject2 : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate",
+			"CableComponent"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
