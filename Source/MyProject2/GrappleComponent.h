@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "CableComponent.h"
 #include "GrappleComponent.generated.h"
+
+class UCableComponent;
 
 /**
  *  Grapple device component — attach to any character to give them a grapple arm.
