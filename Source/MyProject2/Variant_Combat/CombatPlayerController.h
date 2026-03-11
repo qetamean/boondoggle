@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class ACombatCharacter;
+class UCombatHUD;
 
 /**
  *  Simple Player Controller for a third person combat game
@@ -37,6 +38,14 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UUserWidget> MobileControlsWidget;
 
+	/** HUD widget class to spawn for the local player */
+	UPROPERTY(EditAnywhere, Category="HUD")
+	TSubclassOf<UCombatHUD> HUDWidgetClass;
+
+	/** Pointer to the active HUD widget */
+	UPROPERTY()
+	TObjectPtr<UCombatHUD> HUDWidget;
+
 	/** If true, the player will use UMG touch controls even if not playing on mobile platforms */
 	UPROPERTY(EditAnywhere, Config, Category = "Input|Touch Controls")
 	bool bForceTouchControls = false;
@@ -63,6 +72,9 @@ public:
 
 	/** Updates the character respawn transform */
 	void SetRespawnTransform(const FTransform& NewRespawn);
+
+	/** Returns the active HUD widget, or nullptr if not yet created */
+	UCombatHUD* GetCombatHUD() const { return HUDWidget; }
 
 protected:
 

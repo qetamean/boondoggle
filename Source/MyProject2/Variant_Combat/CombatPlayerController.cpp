@@ -2,6 +2,7 @@
 
 
 #include "Variant_Combat/CombatPlayerController.h"
+#include "UI/CombatHUD.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "Kismet/GameplayStatics.h"
@@ -16,6 +17,16 @@
 void ACombatPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// spawn the HUD for the local player
+	if (IsLocalPlayerController() && HUDWidgetClass)
+	{
+		HUDWidget = CreateWidget<UCombatHUD>(this, HUDWidgetClass);
+		if (HUDWidget)
+		{
+			HUDWidget->AddToPlayerScreen(1);
+		}
+	}
 
 	// only spawn touch controls on local player controllers
 	if (ShouldUseTouchControls() && IsLocalPlayerController())

@@ -3,6 +3,7 @@
 
 #include "CombatCharacter.h"
 #include "GrappleComponent.h"
+#include "UI/CombatHUD.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -174,13 +175,29 @@ void ACombatCharacter::DoChargedAttackEnd()
 	}
 }
 
+UCombatHUD* ACombatCharacter::GetCombatHUD() const
+{
+	if (ACombatPlayerController* PC = Cast<ACombatPlayerController>(GetController()))
+	{
+		return PC->GetCombatHUD();
+	}
+	return nullptr;
+}
+
 void ACombatCharacter::ResetHP()
 {
 	// reset the current HP total
 	CurrentHP = MaxHP;
 
-	// update the life bar
+	// update the world-space life bar
 	LifeBarWidget->SetLifePercentage(1.0f);
+
+	// update the player HUD
+	if (UCombatHUD* HUD = GetCombatHUD())
+	{
+		HUD->UpdateHealth(CurrentHP, MaxHP);
+		HUD->HideDeathScreen();
+	}
 }
 
 void ACombatCharacter::ComboAttack()
@@ -414,8 +431,14 @@ void ACombatCharacter::HandleDeath()
 	// enable full ragdoll physics
 	GetMesh()->SetSimulatePhysics(true);
 
-	// hide the life bar
+	// hide the world-space life bar
 	LifeBar->SetHiddenInGame(true);
+
+	// show death screen on the player HUD
+	if (UCombatHUD* HUD = GetCombatHUD())
+	{
+		HUD->ShowDeathScreen();
+	}
 
 	// pull back the camera
 	GetCameraBoom()->TargetArmLength = DeathCameraDistance;
@@ -426,7 +449,19 @@ void ACombatCharacter::HandleDeath()
 
 void ACombatCharacter::ApplyHealing(float Healing, AActor* Healer)
 {
-	// stub
+	if (CurrentHP <= 0.0f) return;
+
+	CurrentHP = FMath::Clamp(CurrentHP + Healing, 0.0f, MaxHP);
+
+	// update the world-space life bar
+	LifeBarWidget->SetLifePercentage(CurrentHP / MaxHP);
+
+	// notify the player HUD
+	if (UCombatHUD* HUD = GetCombatHUD())
+	{
+		HUD->UpdateHealth(CurrentHP, MaxHP);
+		HUD->ShowHealEffect();
+	}
 }
 
 void ACombatCharacter::NotifyDanger(const FVector& DangerLocation, AActor* DangerSource)
@@ -459,8 +494,15 @@ float ACombatCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dama
 	}
 	else
 	{
-		// update the life bar
+		// update the world-space life bar
 		LifeBarWidget->SetLifePercentage(CurrentHP / MaxHP);
+
+		// notify the player HUD
+		if (UCombatHUD* HUD = GetCombatHUD())
+		{
+			HUD->UpdateHealth(CurrentHP, MaxHP);
+			HUD->ShowDamageFlash();
+		}
 
 		// enable partial ragdoll physics, but keep the pelvis vertical
 		GetMesh()->SetPhysicsBlendWeight(0.5f);

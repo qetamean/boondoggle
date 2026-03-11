@@ -16,6 +16,7 @@ struct FInputActionValue;
 class UCombatLifeBar;
 class UWidgetComponent;
 class UGrappleComponent;
+class UCombatHUD;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCombatCharacter, Log, All);
 
@@ -300,6 +301,11 @@ public:
 
 	/** Called from the respawn timer to destroy and re-create the character */
 	void RespawnCharacter();
+
+private:
+
+	/** Returns the player's screen HUD widget, or nullptr for AI-controlled characters */
+	UCombatHUD* GetCombatHUD() const;
 
 public:
 
